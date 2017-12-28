@@ -36,11 +36,11 @@ class form:
         for i in range(7):
             self.ais_robotlinks.append(self.display.DisplayShape(self.robotLinks[i], update=True))
 
-        self.move_robot_Shapes(np.array([0, 0, 0, 0, 0, 0]))
+        #self.move_robot_Shapes(np.array([0, 0, 0, 0, 0, 0]))
 
     def move(self):
         for j in range(100):
-            self.move_robot_Shapes(np.array([j*5, 0, 0, 0, 0, 0]))
+            self.move_robot_AIS(np.array([j*5, -j*0.1, 0, 0, 0, 0]))
 
 
     def move_robot_AIS(self,J):
@@ -51,38 +51,8 @@ class form:
             self.display.Context.SetLocation( self.ais_robotlinks[i], TopLoc_Location(self.current_trsf[i]) )
         self.display.Context.UpdateCurrentViewer()
 
-    def move_robot_ShapesB(self,J):
-        self.robotKin.setJoints(J)
-        for i in range(0, 7):
-            H = self.robotKin.get_link_H(i)
-            self.last_trsf[i].SetValues(self.H_last[i][0, 0], self.H_last[i][0, 1], self.H_last[i][0, 2], self.H_last[i][0, 3],
-                                        self.H_last[i][1, 0], self.H_last[i][1, 1], self.H_last[i][1, 2], self.H_last[i][1, 3],
-                                        self.H_last[i][2, 0], self.H_last[i][2, 1], self.H_last[i][2, 2], self.H_last[i][2, 3])
-            self.current_trsf[i].SetValues(H[0, 0], H[0, 1], H[0, 2], H[0, 3], H[1, 0], H[1, 1], H[1, 2], H[1, 3],
-                                           H[2, 0], H[2, 1], H[2, 2], H[2, 3])
-            self.robotLinks[i].Move( TopLoc_Location(self.current_trsf[i].Multiplied(self.last_trsf[i].Inverted()) ))
-            self.display.Context.SetLocation(self.ais_robotlinks[i], TopLoc_Location(self.current_trsf[i]))
-            self.H_last[i] = deepcopy(H)
-        self.display.Context.UpdateCurrentViewer()
-
-    def move_robot_ShapesC(self,J):
-        #self.display.Context.EraseAll()
-        self.robotKin.setJoints(J)
-        for i in range(0, 7):
-            H = self.robotKin.get_link_H(i)
-            self.last_trsf[i].SetValues(self.H_last[i][0, 0], self.H_last[i][0, 1], self.H_last[i][0, 2], self.H_last[i][0, 3],
-                                        self.H_last[i][1, 0], self.H_last[i][1, 1], self.H_last[i][1, 2], self.H_last[i][1, 3],
-                                        self.H_last[i][2, 0], self.H_last[i][2, 1], self.H_last[i][2, 2], self.H_last[i][2, 3])
-            self.current_trsf[i].SetValues(H[0, 0], H[0, 1], H[0, 2], H[0, 3], H[1, 0], H[1, 1], H[1, 2], H[1, 3],
-                                           H[2, 0], H[2, 1], H[2, 2], H[2, 3])
-            self.robotLinks[i].Move( TopLoc_Location(self.current_trsf[i].Multiplied(self.last_trsf[i].Inverted()) ))
-            self.display.Context.Redisplay(self.ais_robotlinks[i])
-            #self.ais_robotlinks[i] = self.display.DisplayShape(self.robotLinks[i], update=True)
-            self.H_last[i] = deepcopy(H)
-        self.display.Repaint()
-
     def move_robot_Shapes(self,J):
-        #self.display.Context.EraseAll()
+        self.display.Context.EraseAll()
         self.robotKin.setJoints(J)
         for i in range(0, 7):
             H = self.robotKin.get_link_H(i)
@@ -92,11 +62,8 @@ class form:
             self.current_trsf[i].SetValues(H[0, 0], H[0, 1], H[0, 2], H[0, 3], H[1, 0], H[1, 1], H[1, 2], H[1, 3],
                                            H[2, 0], H[2, 1], H[2, 2], H[2, 3])
             self.robotLinks[i].Move( TopLoc_Location(self.current_trsf[i].Multiplied(self.last_trsf[i].Inverted()) ))
-            self.ais_robotlinks[i]=AIS_Shape(self.robotLinks[i])
-            self.display.Context.Update(self.ais_robotlinks[i])
-            ##self.ais_robotlinks[i] = self.display.DisplayShape(self.robotLinks[i], update=True)
+            self.ais_robotlinks[i] = self.display.DisplayShape(self.robotLinks[i], update=True)
             self.H_last[i] = deepcopy(H)
-        self.display.Context.UpdateCurrentViewer()
 
     def drawOrigin(self):
         XEdge = BRepBuilderAPI_MakeEdge(gp_Pnt(0, 0, 0), gp_Pnt(1000, 0, 0))
@@ -124,3 +91,47 @@ if __name__ == '__main__':
     new_form.add_function_to_menu('Tools', new_form.command)
     new_form.add_function_to_menu('Tools', new_form.move)
     new_form.start_display()
+
+
+
+
+
+
+
+
+
+
+
+"""
+    def move_robot_ShapesB(self,J):
+        self.robotKin.setJoints(J)
+        for i in range(0, 7):
+            H = self.robotKin.get_link_H(i)
+            self.last_trsf[i].SetValues(self.H_last[i][0, 0], self.H_last[i][0, 1], self.H_last[i][0, 2], self.H_last[i][0, 3],
+                                        self.H_last[i][1, 0], self.H_last[i][1, 1], self.H_last[i][1, 2], self.H_last[i][1, 3],
+                                        self.H_last[i][2, 0], self.H_last[i][2, 1], self.H_last[i][2, 2], self.H_last[i][2, 3])
+            self.current_trsf[i].SetValues(H[0, 0], H[0, 1], H[0, 2], H[0, 3], H[1, 0], H[1, 1], H[1, 2], H[1, 3],
+                                           H[2, 0], H[2, 1], H[2, 2], H[2, 3])
+            self.robotLinks[i].Move( TopLoc_Location(self.current_trsf[i].Multiplied(self.last_trsf[i].Inverted()) ))
+            self.display.Context.SetLocation(self.ais_robotlinks[i], TopLoc_Location(self.current_trsf[i]))
+            self.H_last[i] = deepcopy(H)
+        self.display.Context.UpdateCurrentViewer()
+
+
+    def move_robot_ShapesC(self,J):
+        #self.display.Context.EraseAll()
+        self.robotKin.setJoints(J)
+        for i in range(0, 7):
+            H = self.robotKin.get_link_H(i)
+            self.last_trsf[i].SetValues(self.H_last[i][0, 0], self.H_last[i][0, 1], self.H_last[i][0, 2], self.H_last[i][0, 3],
+                                        self.H_last[i][1, 0], self.H_last[i][1, 1], self.H_last[i][1, 2], self.H_last[i][1, 3],
+                                        self.H_last[i][2, 0], self.H_last[i][2, 1], self.H_last[i][2, 2], self.H_last[i][2, 3])
+            self.current_trsf[i].SetValues(H[0, 0], H[0, 1], H[0, 2], H[0, 3], H[1, 0], H[1, 1], H[1, 2], H[1, 3],
+                                           H[2, 0], H[2, 1], H[2, 2], H[2, 3])
+            self.robotLinks[i].Move( TopLoc_Location(self.current_trsf[i].Multiplied(self.last_trsf[i].Inverted()) ))
+            self.ais_robotlinks[i]=AIS_Shape(self.robotLinks[i])
+            self.display.Context.Update(self.ais_robotlinks[i])
+            ##self.ais_robotlinks[i] = self.display.DisplayShape(self.robotLinks[i], update=True)
+            self.H_last[i] = deepcopy(H)
+        self.display.Context.UpdateCurrentViewer()
+"""
